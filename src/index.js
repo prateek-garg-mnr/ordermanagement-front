@@ -1,17 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import reduxThunk from 'redux-thunk';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+import reducers from './reducers';
+import App from './components/App';
+import Signup from './components/auth/Signup';
+import OrderTable from './components/OrderTable';
+import Signout from './components/auth/Signout';
+import Signin from './components/auth/Signin';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+const store = createStore(
+  reducers,
+  {
+    auth: { authenticated: localStorage.getItem('token') }
+  },
+  applyMiddleware(reduxThunk)
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App>
+      <ToastContainer position="top-center"/>
+        <Route path="/" exact component={Signin} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/feature" component={OrderTable} />
+        <Route path="/signout" component={Signout} />
+        <Route path="/signin" component={Signin} />
+      </App>
+    </BrowserRouter>
+  </Provider>,
+  document.querySelector('#root')
+);
